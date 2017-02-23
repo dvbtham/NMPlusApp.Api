@@ -13,7 +13,7 @@ namespace NMPlusApp.Api
         {
             var host = new WebHostBuilder()
                 .UseKestrel()
-                .UseUrls("http://*:5000")
+                .UseUrls("http://*:44361")
                 .UseIISIntegration()
                 .UseStartup<Startup>()
                 .Build();
