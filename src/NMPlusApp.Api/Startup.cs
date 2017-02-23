@@ -7,30 +7,61 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 
 namespace NMPlusApp.Api
 {
     public class Startup
     {
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit http://go.microsoft.com/fwlink/?LinkID=398940
+        private const string defaultIssuer = "http://api.nmplusapp.io";
+        private readonly static SecurityKey serverKey = new SymmetricSecurityKey(Utilities.Base64UrlDecode("superprotectsecretkey123"));
+
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<IClientValidator, ClientValidator>()
+                    .AddAuthentication();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app)
         {
-            loggerFactory.AddConsole();
-
-            if (env.IsDevelopment())
+            app.UseDeveloperExceptionPage();
+            var tokenValidationParameters = new TokenValidationParameters
             {
-                app.UseDeveloperExceptionPage();
-            }
+                ValidateAudience = false,
+                ValidateActor = false,
+                ValidIssuer = defaultIssuer,
+                IssuerSigningKey = serverKey
+            };
+
+            app.UseJwtBearerAuthentication(
+                authenticationEndpoint: "/jwt/token",
+                options: new JwtBearerOptions
+                {
+                    TokenValidationParameters = tokenValidationParameters,
+                });
+
+            app.Map("/ping", appContext =>
+            {
+                appContext.Run(context =>
+                {
+                    return context.Response.WriteAsync("Pong!");
+                });
+            });
+
+            app.UseAuthorization();
 
             app.Run(async (context) =>
             {
-                await context.Response.WriteAsync("Hello World!");
+                var logo = @"
+                            __________________________
+                           |                          |
+                           |  NINETY MINUTES PLUS APP |
+                           |  devoloped by David Thâm |
+                           |__________________________|
+                                ";
+                var result = $"App name: {logo}\n App Id: {context.User.Claims.SingleOrDefault(x => x.Type == "appid").Value}";
+                await context.Response.WriteAsync(result);
             });
         }
     }
