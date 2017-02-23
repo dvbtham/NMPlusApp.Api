@@ -57,7 +57,7 @@ namespace NMPlusApp.Api
                             __________________________
                            |                          |
                            |  NINETY MINUTES PLUS APP |
-                           |  developed by David Thâm |
+                           |  devoloped by David Thâm |
                            |__________________________|
                                 ";
                 var result = $"App name: {logo}\n App Id: {context.User.Claims.SingleOrDefault(x => x.Type == "appid").Value}";

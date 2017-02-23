@@ -12,10 +12,7 @@ namespace NMPlusApp.Api
         public static void Main(string[] args)
         {
             var host = new WebHostBuilder()
-                .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseKestrel()
-                .UseUrls("http://*:5000")
-                .UseIISIntegration()
                 .UseStartup<Startup>()
                 .Build();
 
