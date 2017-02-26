@@ -14,6 +14,7 @@ using NMPlusApp.Api.Controllers;
 using NMPlusApp.Api.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using NMPlusApp.Api.Data;
 
 namespace NMPlusApp.Api
 {
@@ -48,7 +49,9 @@ namespace NMPlusApp.Api
                 .AddAuthentication()
                 .AddSingleton<IConfigureOptions<JwtAuthenticationOptions>, JwtAuthenticationOptionsConfiguration>()
                 .AddSingleton<IConsumerValidator, ConsumerValidator>()
-                .AddSingleton(configuration);
+                .AddSingleton(configuration)
+                .AddSingleton<IEntityLookup, EntityLookup>()
+                .AddTransient<ICatchLog, CatchLog>();
 
             services
                .AddMvcCore(options =>
@@ -57,7 +60,8 @@ namespace NMPlusApp.Api
                    options.Filters.Add(new AuthorizeFilter(policy));
                    options.OutputFormatters.Insert(0, new PingPongOutputFormatter());
                })
-               .AddAuthorization();
+               .AddAuthorization()
+               .AddJsonFormatters();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
