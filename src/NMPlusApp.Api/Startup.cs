@@ -55,6 +55,7 @@ namespace NMPlusApp.Api
                {
                    var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
                    options.Filters.Add(new AuthorizeFilter(policy));
+                   options.OutputFormatters.Insert(0, new PingPongOutputFormatter());
                })
                .AddAuthorization();
         }
