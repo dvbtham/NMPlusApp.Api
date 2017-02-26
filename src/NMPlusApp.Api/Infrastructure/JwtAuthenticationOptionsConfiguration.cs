@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
 
-namespace NMPlusApp.Api
+namespace NMPlusApp.Api.Infrastructure
 {
     public class JwtAuthenticationOptionsConfiguration : IConfigureOptions<JwtAuthenticationOptions>
     {

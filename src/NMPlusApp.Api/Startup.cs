@@ -10,6 +10,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using NMPlusApp.Api.Controllers;
+using NMPlusApp.Api.Infrastructure;
 
 namespace NMPlusApp.Api
 {
@@ -50,37 +52,14 @@ namespace NMPlusApp.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IOptions<JwtAuthenticationOptions> jwtOptions)
         {
-            app.UseJwtBearerAuthentication(
-                authenticationEndpoint: jwtOptions.Value.TokenEndpoint,
-                options: new JwtBearerOptions
-                {
-                    TokenValidationParameters = jwtOptions.Value.Parameters,
-                });
+            app.UseJwtBearerAuthenticationWithTokenIssuer();
 
-            app.Map("/ping", appContext =>
-            {
-                appContext.Run(context =>
-                {
-                    return context.Response.WriteAsync("Pong!");
-                });
-            });
+            app.Map("/ping", PingController.Get);
 
             app.UseAuthorization();
 
-            app.UseAuthorization();
-
-            app.Run(async (context) =>
-            {
-                var logo = @"
-                            __________________________
-                           |                          |
-                           |  NINETY MINUTES PLUS APP |
-                           |  developed by David Thâm |
-                           |__________________________|
-                                ";
-                var result = $"App name: {logo}\n App Id: {context.User.Claims.SingleOrDefault(x => x.Type == "appid").Value}";
-                await context.Response.WriteAsync(result);
-            });
+            //protected resource:
+            app.Map("", HomeController.Get);
         }
     }
 }
