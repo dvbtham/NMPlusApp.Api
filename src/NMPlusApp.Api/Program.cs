@@ -15,6 +15,7 @@ namespace NMPlusApp.Api
                 .UseKestrel()
                 .UseUrls("http://*:44361")
                 .UseIISIntegration()
+                .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseStartup<Startup>()
                 .Build();
 
