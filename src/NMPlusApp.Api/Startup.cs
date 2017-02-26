@@ -1,20 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using NMPlusApp.Api.Controllers;
 using NMPlusApp.Api.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using NMPlusApp.Api.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace NMPlusApp.Api
 {
@@ -51,7 +44,11 @@ namespace NMPlusApp.Api
                 .AddSingleton<IConsumerValidator, ConsumerValidator>()
                 .AddSingleton(configuration)
                 .AddSingleton<IEntityLookup, EntityLookup>()
-                .AddTransient<ICatchLog, CatchLog>();
+                .AddTransient<ICatchLog, CatchLog>()
+                .AddDbContext<PokeAppDataContext>(options =>
+                 {
+                     options.UseSqlServer(configuration.GetConnectionString(nameof(PokeAppDataContext)));
+                 }); ;
 
             services
                .AddMvcCore(options =>
