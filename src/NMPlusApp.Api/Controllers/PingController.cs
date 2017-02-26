@@ -1,16 +1,17 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace NMPlusApp.Api.Controllers
 {
+    [AllowAnonymous]
     public class PingController
     {
-        public static void Get(IApplicationBuilder app)
+        [Route("/ping")]
+        public ActionResult Get()
         {
-            app.Run(async context =>
-            {
-                await context.Response.WriteAsync("Pong!");
-            });
+            return new OkObjectResult("Pong!");
         }
     }
 }

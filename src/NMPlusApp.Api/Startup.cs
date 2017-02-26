@@ -12,6 +12,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using NMPlusApp.Api.Controllers;
 using NMPlusApp.Api.Infrastructure;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 
 namespace NMPlusApp.Api
 {
@@ -47,19 +49,21 @@ namespace NMPlusApp.Api
                 .AddSingleton<IConfigureOptions<JwtAuthenticationOptions>, JwtAuthenticationOptionsConfiguration>()
                 .AddSingleton<IConsumerValidator, ConsumerValidator>()
                 .AddSingleton(configuration);
+
+            services
+               .AddMvcCore(options =>
+               {
+                   var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+                   options.Filters.Add(new AuthorizeFilter(policy));
+               })
+               .AddAuthorization();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IOptions<JwtAuthenticationOptions> jwtOptions)
         {
             app.UseJwtBearerAuthenticationWithTokenIssuer();
-
-            app.Map("/ping", PingController.Get);
-
-            app.UseAuthorization();
-
-            //protected resource:
-            app.Map("", HomeController.Get);
+            app.UseMvc();
         }
     }
 }

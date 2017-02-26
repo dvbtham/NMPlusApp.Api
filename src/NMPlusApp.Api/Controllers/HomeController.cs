@@ -1,25 +1,24 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 
 namespace NMPlusApp.Api.Controllers
 {
     public class HomeController
     {
-        public static void Get(IApplicationBuilder app)
+        [ActionContext]
+        public ActionContext ActionContext { get; set; }
+        [Route("")]
+        public IActionResult Get()
         {
-            app.Run(async (context) =>
-            {
-                var logo = @"
+            const string logo = @"
                             __________________________
                            |                          |
                            |  NINETY MINUTES PLUS APP |
                            |  developed by David Thâm |
                            |__________________________|
                                 ";
-                var result = $"App name: {logo}\n App Id: {context.User.Claims.SingleOrDefault(x => x.Type == "appid").Value}";
-                await context.Response.WriteAsync(result);
-            });
+            var result = $"App name: {logo}\n App Id: {ActionContext.HttpContext.User.Claims.SingleOrDefault(x => x.Type == "appid").Value}";
+            return new OkObjectResult(result);
         }
     }
 }
